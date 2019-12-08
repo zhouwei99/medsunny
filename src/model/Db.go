@@ -6,13 +6,14 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
+	_ "github.com/lib/pq"
 )
 
 var Db *sql.DB
 
 func init() {
 	var err error
-	Db, err = sql.Open("postgres", "dbname=sunnyMed sslmode=disable")
+	Db, err = sql.Open("postgres", "dbname=medsunny sslmode=disable user=zhouwei pwd=zhouwei")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -25,7 +26,7 @@ func createUUID() (uuid string) {
 	u := new([16]byte)
 	_, err := rand.Read(u[:])
 	if err != nil {
-		log.Fatalln("uuid generate error",err)
+		log.Fatalln("uuid generate error", err)
 	}
 	// 0x40 is reserved variant from RFC 4122
 	u[8] = (u[8] | 0x40) & 0x7F

@@ -7,31 +7,33 @@ import (
 	"time"
 )
 
-
 type Sickness struct {
 
 	//ID
-	Id int64
+	Id int64 `json:"id"`
+
+	//UUID
+	Uuid string `json:"uuid"`
 
 	//名称
-	Name string
+	Name string `json:"name"`
 
 	//症状
-	Symptom string
+	Symptom string `json:"symptom"`
 
 	//护理
-	Nursing string
+	Nursing string `json:"nursing"`
 
 	//常用药
-	Medicals string
+	Medicals string `json:"medicals"`
 
 	//病程
-	Duration string
+	Duration string `json:"duration"`
 
 	//风险
-	Risks string
+	Risks string `json:"risks"`
 
-	CreateAt time.Time
+	CreateAt time.Time `json:"create_at"`
 }
 
 var SicknessTableName = "sickness"
@@ -45,7 +47,7 @@ func FetchSickById(id int64) (sick Sickness, err error) {
 
 func FetchBySymptom(symptom string) (sicks []Sickness, err error) {
 
-	rows, err := Db.Query("SELECT " + SickItems("") + " FROM " + SicknessTableName + " where symptom like %$1%", symptom)
+	rows, err := Db.Query("SELECT "+SickItems("")+" FROM "+SicknessTableName+" where symptom like %$1%", symptom)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -73,6 +75,7 @@ func SickItems(tag string) string {
 	if len(tag) > 0 {
 		return strings.Join([]string{
 			tag + ".id",
+			tag + ".uuid",
 			tag + ".`name`",
 			tag + ".symptom",
 			tag + ".nursing",
@@ -82,13 +85,13 @@ func SickItems(tag string) string {
 			tag + ".createAt",
 		}, " ")
 	}
-	return "id, `name`, symptom, nursing, medicals, duration, risks, createAt"
+	return "id, uuid,`name`, symptom, nursing, medicals, duration, risks, createAt"
 }
 
 func ScanRows(rows *sql.Rows, sicks []Sickness) {
 	for rows.Next() {
 		sick := Sickness{}
-		err := rows.Scan(sick.Id, sick.Name, sick.Symptom, sick.Nursing, sick.Medicals, sick.Medicals, sick.Duration, sick.Risks)
+		err := rows.Scan(sick.Id, sick.Uuid, sick.Name, sick.Symptom, sick.Nursing, sick.Medicals, sick.Medicals, sick.Duration, sick.Risks)
 		if err != nil {
 			log.Fatalln("scan row error", err)
 		}
@@ -96,15 +99,13 @@ func ScanRows(rows *sql.Rows, sicks []Sickness) {
 	}
 	err := rows.Close()
 	if err != nil {
-		log.Fatalln("sql statement close error, table : " + SicknessTableName,err)
+		log.Fatalln("sql statement close error, table : "+SicknessTableName, err)
 	}
 }
 
 func ScanRow(row *sql.Row, sick *Sickness) {
-	err := row.Scan(sick.Id, sick.Name, sick.Symptom, sick.Nursing, sick.Medicals, sick.Medicals, sick.Duration, sick.Risks)
+	err := row.Scan(sick.Id, sick.Uuid, sick.Name, sick.Symptom, sick.Nursing, sick.Medicals, sick.Medicals, sick.Duration, sick.Risks)
 	if err != nil {
 		log.Fatalln("scan row error", err)
 	}
 }
-
-
